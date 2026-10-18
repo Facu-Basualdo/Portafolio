@@ -1,26 +1,67 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "@heroui/styles";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/*
+ * El sitio es sólo oscuro (el <html> lleva la clase .dark). Sobrescribe las
+ * variables de @heroui/styles, que viven en @layer theme; estas reglas van sin
+ * capa para ganarles. Fondo, superficies y textos son los de la landing de
+ * miFACU (--lp-deep, --lp-surface, --lp-text, --lp-muted); el acento es el
+ * verde del perfil de GitHub.
+ */
+.dark,
+[data-theme="dark"] {
+  --background: #06090f;
+  --foreground: #e8eeff;
+
+  --surface: #0e1424;
+  --surface-foreground: var(--foreground);
+  --surface-secondary: #121a2e;
+  --surface-secondary-foreground: var(--foreground);
+  --surface-tertiary: #18213a;
+  --surface-tertiary-foreground: var(--foreground);
+
+  --overlay: #101728;
+  --overlay-foreground: var(--foreground);
+
+  --muted: #7b8fae;
+  /* Sólido y no blanco al 6% como en miFACU: la grilla del hero lo usa con opacidad. */
+  --border: #1a2236;
+
+  --default: #161e33;
+  --default-foreground: var(--foreground);
+
+  --accent: oklch(88% 0.19 165);
+  --accent-foreground: oklch(16% 0.03 165);
+  --focus: var(--accent);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Que los anclas no queden pegados al borde superior. */
+  scroll-padding-top: 4rem;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Resplandor azul desde abajo, con el azul de marca de miFACU (#2563EB). */
+.resplandor-marca {
+  background: radial-gradient(ellipse at 50% 100%, rgb(37 99 235 / 0.2) 0%, transparent 62%);
+}
+
+::selection {
+  background: color-mix(in oklch, var(--accent) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

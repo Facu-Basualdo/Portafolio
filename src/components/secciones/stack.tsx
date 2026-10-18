@@ -1,0 +1,27 @@
+import { Chip } from "@heroui/react";
+import { stack } from "@/data/perfil";
+import { Encabezado } from "./encabezado";
+
+export function Stack() {
+  return (
+    <section id="stack" className="px-4 py-24 md:px-8">
+      <div className="mx-auto max-w-6xl">
+        <Encabezado numero="03" titulo="Stack" bajada="Las herramientas que uso todos los días." />
+        <dl className="divide-y divide-border border-y border-border">
+          {stack.map(({ grupo, items }) => (
+            <div key={grupo} className="grid gap-3 py-6 md:grid-cols-[14rem_1fr] md:gap-8">
+              <dt className="font-mono text-sm text-muted md:pt-1">{grupo}</dt>
+              <dd className="flex flex-wrap gap-2">
+                {items.map((item) => (
+                  <Chip key={item} variant="secondary">
+                    {item}
+                  </Chip>
+                ))}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  );
+}
