@@ -16,7 +16,7 @@ import {
   useTransform,
 } from "motion/react";
 
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // Los links a otros sitios abren en otra pestaña; las anclas de la página no.
 const externo = (href: string) =>
@@ -80,7 +80,7 @@ const FloatingDockMobile = ({
                   aria-label={item.title}
                   onClick={() => setOpen(false)}
                   {...externo(item.href)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface"
+                  className="flex h-10 w-10 items-center justify-center border border-border bg-background"
                 >
                   <div className="h-4 w-4">{item.icon}</div>
                 </a>
@@ -93,12 +93,31 @@ const FloatingDockMobile = ({
         onClick={() => setOpen(!open)}
         aria-label={open ? "Cerrar navegación" : "Abrir navegación"}
         aria-expanded={open}
-        className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface shadow-lg"
+        className="flex h-12 w-12 items-center justify-center border border-border bg-background"
       >
         <IconLayoutNavbarCollapse className="h-5 w-5 text-muted" />
       </button>
     </div>
   );
+};
+
+// Medidas del dock desktop, en px. Van por style para que el cálculo de
+// posiciones de abajo use exactamente los mismos números que el layout.
+const BASE = 40; // Lado de un ícono en reposo.
+const MAXIMO = 80; // Lado del ícono bajo el cursor.
+const ALCANCE = 150; // Distancia a la que un ícono deja de agrandarse.
+const GAP = 12;
+const PADDING = 12;
+const BORDE = 1;
+
+// Rápido y casi sin rebote: el tamaño alcanza al cursor en ~30 ms.
+const resorte = { mass: 0.1, stiffness: 300, damping: 12 };
+
+type Dock = {
+  /** Centro horizontal actual del ícono `indice`. */
+  centroDe: (indice: number) => number;
+  /** Anota el resorte de un ícono; devuelve la función que lo quita. */
+  registrar: (indice: number, lado: MotionValue<number>) => () => void;
 };
 
 const FloatingDockDesktop = ({
@@ -109,17 +128,64 @@ const FloatingDockDesktop = ({
   className?: string;
 }) => {
   const mouseX = useMotionValue(Infinity);
+  const ref = useRef<HTMLDivElement>(null);
+  const lados = useRef<MotionValue<number>[]>([]);
+  const centro = useRef(Infinity);
+
+  // El centro se mide al montar y al cambiar el tamaño de la ventana.
+  useEffect(() => {
+    const medir = () => {
+      const rect = ref.current?.getBoundingClientRect();
+      centro.current = rect && rect.width > 0 ? rect.left + rect.width / 2 : Infinity;
+    };
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, []);
+
+  /*
+   * Centro actual de un ícono, calculado con los tamaños que tienen los
+   * resortes en este momento. Es lo mismo que medir con getBoundingClientRect,
+   * pero sin leer el DOM: leerlo mientras los íconos cambian de tamaño forzaba
+   * un recálculo de layout por ícono y por cuadro. Medir sólo la posición en
+   * reposo tampoco sirve: el dock se re-centra al crecer y la magnificación
+   * quedaba atrasada respecto del cursor.
+   */
+  const dock = useMemo<Dock>(
+    () => ({
+      centroDe: (indice) => {
+        if (!Number.isFinite(centro.current)) return Infinity;
+        const tamanos = items.map((_, i) => lados.current[i]?.get() ?? BASE);
+        const total = tamanos.reduce((suma, lado) => suma + lado, 0);
+        const ancho = total + GAP * (tamanos.length - 1) + 2 * (PADDING + BORDE);
+        let x = centro.current - ancho / 2 + PADDING + BORDE;
+        for (let i = 0; i < indice; i++) x += tamanos[i] + GAP;
+        return x + tamanos[indice] / 2;
+      },
+      registrar: (indice, lado) => {
+        lados.current[indice] = lado;
+        return () => {
+          delete lados.current[indice];
+        };
+      },
+    }),
+    [items],
+  );
+
   return (
     <motion.div
-      onMouseMove={(e) => mouseX.set(e.pageX)}
+      ref={ref}
+      onMouseMove={(e) => mouseX.set(e.clientX)}
       onMouseLeave={() => mouseX.set(Infinity)}
+      style={{ gap: GAP, paddingInline: PADDING, borderWidth: BORDE }}
+      // contain: layout aísla el recálculo de tamaños al dock.
       className={cn(
-        "mx-auto hidden h-16 items-end gap-4 rounded-2xl border border-border bg-surface/80 px-4 pb-3 backdrop-blur-md md:flex",
+        "mx-auto hidden h-16 items-end border-border bg-background pb-3 [contain:layout] md:flex",
         className,
       )}
     >
-      {items.map((item) => (
-        <IconContainer mouseX={mouseX} key={item.title} {...item} />
+      {items.map((item, indice) => (
+        <IconContainer key={item.title} mouseX={mouseX} dock={dock} indice={indice} {...item} />
       ))}
     </motion.div>
   );
@@ -127,82 +193,56 @@ const FloatingDockDesktop = ({
 
 function IconContainer({
   mouseX,
+  dock,
+  indice,
   title,
   icon,
   href,
 }: {
-  mouseX: MotionValue;
+  mouseX: MotionValue<number>;
+  dock: Dock;
+  indice: number;
   title: string;
   icon: React.ReactNode;
   href: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const distance = useTransform(mouseX, (val) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-
-    return val - bounds.x - bounds.width / 2;
+  // Sin mouse encima (x = Infinity) o sin medir todavía, el ícono está "lejos".
+  const distancia = useTransform(mouseX, (x) => {
+    const centro = dock.centroDe(indice);
+    if (!Number.isFinite(x) || !Number.isFinite(centro)) return ALCANCE;
+    return x - centro;
   });
+  // Un solo resorte para el lado del cuadrado; el ícono escala con transform,
+  // que no toca el layout.
+  const lado = useSpring(useTransform(distancia, [-ALCANCE, 0, ALCANCE], [BASE, MAXIMO, BASE]), resorte);
+  const escala = useTransform(lado, (l) => l / BASE);
 
-  const widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  const heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-
-  const widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  const heightTransformIcon = useTransform(
-    distance,
-    [-150, 0, 150],
-    [20, 40, 20],
-  );
-
-  const width = useSpring(widthTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  const height = useSpring(heightTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-
-  const widthIcon = useSpring(widthTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  const heightIcon = useSpring(heightTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
+  useEffect(() => dock.registrar(indice, lado), [dock, indice, lado]);
 
   const [hovered, setHovered] = useState(false);
 
   return (
-    <a href={href} aria-label={title} {...externo(href)}>
+    <a href={href} aria-label={title} className="group/icono" {...externo(href)}>
       <motion.div
-        ref={ref}
-        style={{ width, height }}
+        style={{ width: lado, height: lado }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative flex aspect-square items-center justify-center rounded-full bg-surface-tertiary"
+        className="relative flex aspect-square items-center justify-center border border-border bg-surface transition-colors group-hover/icono:border-foreground/40"
       >
         <AnimatePresence>
           {hovered && (
             <motion.div
-              initial={{ opacity: 0, y: 10, x: "-50%" }}
+              initial={{ opacity: 0, y: 6, x: "-50%" }}
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 2, x: "-50%" }}
-              className="absolute -top-8 left-1/2 w-fit rounded-md border border-border bg-overlay px-2 py-0.5 text-xs whitespace-pre text-foreground"
+              transition={{ duration: 0.15 }}
+              className="absolute -top-8 left-1/2 w-fit border border-border bg-background px-2 py-0.5 font-mono text-[11px] whitespace-pre text-foreground"
             >
               {title}
             </motion.div>
           )}
         </AnimatePresence>
-        <motion.div
-          style={{ width: widthIcon, height: heightIcon }}
-          className="flex items-center justify-center"
-        >
+        <motion.div style={{ scale: escala }} className="flex size-5 items-center justify-center">
           {icon}
         </motion.div>
       </motion.div>

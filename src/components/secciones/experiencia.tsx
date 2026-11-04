@@ -1,28 +1,29 @@
 import { Timeline } from "@/components/ui/timeline";
 import { experiencia } from "@/data/perfil";
+import { Revelar } from "@/components/ui/revelar";
 import { Encabezado } from "./encabezado";
 
 export function Experiencia() {
   const datos = experiencia.map((item) => ({
     title: item.periodo,
     content: (
-      <div className="rounded-2xl border border-border bg-surface p-6">
-        <h3 className="text-xl font-semibold tracking-tight">{item.puesto}</h3>
-        <p className="mt-1 text-sm text-accent">{item.lugar}</p>
-        <ul className="mt-4 space-y-2 text-muted">
+      <Revelar className="border-l border-border pl-6 md:pl-8">
+        <h3 className="font-pixel text-2xl tracking-tight text-foreground md:text-3xl">{item.puesto}</h3>
+        <p className="mt-2 font-mono text-xs text-muted">{item.lugar}</p>
+        <ul className="mt-5 space-y-2 text-sm leading-relaxed text-foreground/80">
           {item.puntos.map((punto) => (
-            <li key={punto} className="flex gap-2">
-              <span aria-hidden className="mt-2.5 size-1 shrink-0 rounded-full bg-muted" />
+            <li key={punto} className="flex gap-3">
+              <span aria-hidden className="text-muted">—</span>
               <span className="text-pretty">{punto}</span>
             </li>
           ))}
         </ul>
-      </div>
+      </Revelar>
     ),
   }));
 
   return (
-    <section id="experiencia" className="px-4 py-24 md:px-8">
+    <section id="experiencia" className="px-4 py-28 md:px-8">
       <div className="mx-auto max-w-6xl">
         <Encabezado
           numero="02"
