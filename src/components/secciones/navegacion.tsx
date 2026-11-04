@@ -11,7 +11,7 @@ import {
 import { FloatingDock } from "@/components/ui/floating-dock";
 import { perfil } from "@/data/perfil";
 
-const clase = "size-full text-muted";
+const clase = "size-full text-muted transition-colors group-hover/icono:text-foreground";
 
 const items = [
   { title: "Inicio", icon: <IconHome className={clase} />, href: "#inicio" },

@@ -1,3 +1,4 @@
+import { Barra } from "@/components/secciones/barra";
 import { Contacto } from "@/components/secciones/contacto";
 import { Experiencia } from "@/components/secciones/experiencia";
 import { Hero } from "@/components/secciones/hero";
@@ -9,6 +10,7 @@ import { perfil } from "@/data/perfil";
 export default function Inicio() {
   return (
     <>
+      <Barra />
       <main className="flex-1">
         <Hero />
         <Proyectos />
@@ -19,7 +21,7 @@ export default function Inicio() {
       <footer className="px-4 pt-8 pb-28 md:px-8">
         <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 border-t border-border pt-6 font-mono text-xs text-muted">
           <span>© {perfil.nombre}</span>
-          <span>Next.js · HeroUI · Aceternity UI</span>
+          <span>Next.js · Geist Pixel · Motion</span>
         </div>
       </footer>
       <Navegacion />

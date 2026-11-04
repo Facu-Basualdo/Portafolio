@@ -11,7 +11,7 @@ export const perfil = {
   roles: ["full-stack", "de producto", "de IA aplicada", "de tiempo real"],
   ubicacion: "Resistencia, Chaco, Argentina",
   resumen:
-    "Estudio Ingeniería en Sistemas en la UTN FRRE y construyo productos que están en producción: una plataforma académica en App Store, Google Play y web, y una plataforma open source de minijuegos con aportes de la comunidad.",
+    "Estudio Ingeniería en Sistemas en la UTN FRRE y construyo productos que están en producción: una plataforma académica en Google Play y web, y una plataforma open source de minijuegos con aportes de la comunidad.",
   disponibilidad: "Disponible para trabajo remoto o presencial en Resistencia · UTC-3",
   email: "facundo@basualdo.dev",
   github: "https://github.com/Facu-Basualdo",
@@ -23,7 +23,7 @@ export const cifras = [
   { valor: "~230k", etiqueta: "líneas en miFACU" },
   { valor: "67", etiqueta: "juegos en Juegachos" },
   { valor: "8", etiqueta: "colaboradores open source" },
-  { valor: "4", etiqueta: "plataformas en producción" },
+  { valor: "3", etiqueta: "plataformas en producción" },
 ];
 
 export type Enlace = { etiqueta: string; href: string };
@@ -190,7 +190,7 @@ export const experiencia: Experiencia[] = [
     puesto: "Cofundador y desarrollador full-stack",
     lugar: "miFACU · remoto · ene 2026 – hoy",
     puntos: [
-      "Plataforma publicada en App Store, Google Play y web: 642 de los 1.458 commits, junto a un socio.",
+      "Plataforma publicada en Google Play y web: 642 de los 1.458 commits, junto a un socio.",
       "Diseñé la arquitectura de IA, con salidas estructuradas validadas por schema y reparación de JSON sin volver a llamar al modelo.",
       "Eliminé el throttling de analytics con un semáforo de concurrencia, backoff con jitter y caché en Redis.",
     ],
@@ -215,7 +215,7 @@ export const experiencia: Experiencia[] = [
 export const stack = [
   {
     grupo: "Frontend",
-    items: ["React 19", "Next.js 16", "React Native + Expo", "SwiftUI", "Tailwind CSS v4", "HeroUI", "TanStack Query"],
+    items: ["React 19", "Next.js 16", "React Native + Expo", "Tailwind CSS v4", "HeroUI", "TanStack Query"],
   },
   {
     grupo: "Backend y datos",

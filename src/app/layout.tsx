@@ -1,16 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Geist_Pixel } from "next/font/google";
+import { Proveedores } from "@/components/proveedores";
 import { perfil } from "@/data/perfil";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+});
+
+// ELSH es el eje de forma del píxel; las letras lo animan (ver .letra-pixel).
+const geistPixel = Geist_Pixel({
+  variable: "--font-geist-pixel",
+  subsets: ["latin", "latin-ext"],
+  axes: ["ELSH"],
+  // Next no tiene métricas de Geist Pixel para ajustar un fallback.
+  adjustFontFallback: false,
+  fallback: ["ui-monospace", "monospace"],
 });
 
 const titulo = `${perfil.nombre} — ${perfil.rol}`;
@@ -36,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#06090f",
+  themeColor: "#000000",
   colorScheme: "dark",
 };
 
@@ -45,9 +51,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="es"
       data-theme="dark"
-      className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${geistMono.variable} ${geistPixel.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-mono">
+        <Proveedores>{children}</Proveedores>
+      </body>
     </html>
   );
 }
