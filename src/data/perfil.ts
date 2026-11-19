@@ -122,6 +122,22 @@ export const proyectos: Proyecto[] = [
     enlaces: [{ etiqueta: "arcosoftware.com.ar", href: "https://www.arcosoftware.com.ar/" }],
   },
   {
+    id: "el-precioso",
+    nombre: "El Precioso",
+    bajada: "Tienda online para un emprendimiento local",
+    descripcion:
+      "Escarapelas y prendedores patrios artesanales de Resistencia: catálogo pensado para el celular, carrito que termina en un pedido por WhatsApp y un panel para que la dueña, sin formación técnica, maneje todo desde el teléfono.",
+    destacados: [
+      "Editor de fotos que quita el fondo en el navegador con un modelo ONNX y compone sobre la plantilla de la marca.",
+      "Cotización, promociones y cupones calculados en PostgreSQL, con la seguridad en RLS.",
+      "Finanzas por mes: ingresos, gastos, más vendidos y exportación a CSV.",
+    ],
+    stack: ["Next.js", "Supabase", "HeroUI", "RLS", "ONNX"],
+    rol: "Full-stack · para un emprendimiento",
+    periodo: "May – Nov 2026",
+    enlaces: [{ etiqueta: "Código", href: "https://github.com/Facu-Basualdo/ElPreciosoTiendaWeb" }],
+  },
+  {
     id: "vitrina",
     nombre: "Vitrina",
     bajada: "Tienda online con catálogo genérico",
@@ -151,7 +167,6 @@ export const proyectos: Proyecto[] = [
       "Recuperación activa y repetición espaciada.",
     ],
     stack: ["Next.js", "Claude Code", "Gemini", "Obsidian"],
-    ancho: "medio",
     rol: "Proyecto propio",
     periodo: "2026",
     enlaces: [
@@ -167,7 +182,6 @@ export const proyectos: Proyecto[] = [
       "Bloodmoon & Bosses sube el nivel de los mobs, Hero's Forge te deja comprar estadísticas con experiencia, Mythic Loot suelta equipo con rareza y Soul Link comparte inventario y hambre entre jugadores.",
     destacados: [],
     stack: ["Java", "Fabric", "Minecraft 26.3"],
-    ancho: "medio",
     rol: "Proyecto propio",
     periodo: "2026",
     enlaces: [
