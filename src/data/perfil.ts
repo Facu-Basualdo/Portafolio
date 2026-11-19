@@ -11,7 +11,7 @@ export const perfil = {
   roles: ["full-stack", "de producto", "de IA aplicada", "de tiempo real"],
   ubicacion: "Resistencia, Chaco, Argentina",
   resumen:
-    "Estudio Ingeniería en Sistemas en la UTN FRRE y construyo productos que están en producción: una plataforma académica en Google Play y web, y una plataforma open source de minijuegos con aportes de la comunidad.",
+    "Estudio Ingeniería en Sistemas en la UTN FRRE y construyo productos que están en producción: una plataforma académica en Google Play y web, una plataforma open source de minijuegos con aportes de la comunidad y una utilidad para Windows en la Microsoft Store.",
   disponibilidad: "Disponible para trabajo remoto o presencial en Resistencia · UTC-3",
   email: "facundo@basualdo.dev",
   github: "https://github.com/Facu-Basualdo",
@@ -87,6 +87,25 @@ export const proyectos: Proyecto[] = [
     ancho: "medio",
   },
   {
+    id: "brillo",
+    nombre: "Brillo",
+    bajada: "Control de brillo para Windows, en la Microsoft Store",
+    descripcion:
+      "Cambia el brillo de cada pantalla desde un icono junto al reloj o con un atajo global: monitores externos y la pantalla de la laptop, sin tocar los botones del monitor.",
+    destacados: [
+      "Monitores externos por DDC/CI (dxva2 vía P/Invoke) y la laptop por WMI.",
+      "Acceso a las pantallas en un hilo propio, con el brillo actualizado en vivo.",
+      "Paquete MSIX para la Store e instalador sin permisos de administrador.",
+    ],
+    stack: ["C#", "WinForms", "Win32", "DDC/CI", "MSIX"],
+    rol: "Proyecto propio",
+    periodo: "Nov 2026",
+    enlaces: [
+      { etiqueta: "Microsoft Store", href: "https://apps.microsoft.com/detail/9N9KLJ46MQVD" },
+      { etiqueta: "Código", href: "https://github.com/Facu-Basualdo/Brillo" },
+    ],
+  },
+  {
     id: "arco",
     nombre: "Arco",
     bajada: "Software de gestión de obras",
@@ -132,6 +151,7 @@ export const proyectos: Proyecto[] = [
       "Recuperación activa y repetición espaciada.",
     ],
     stack: ["Next.js", "Claude Code", "Gemini", "Obsidian"],
+    ancho: "medio",
     rol: "Proyecto propio",
     periodo: "2026",
     enlaces: [
@@ -147,7 +167,7 @@ export const proyectos: Proyecto[] = [
       "Bloodmoon & Bosses sube el nivel de los mobs, Hero's Forge te deja comprar estadísticas con experiencia, Mythic Loot suelta equipo con rareza y Soul Link comparte inventario y hambre entre jugadores.",
     destacados: [],
     stack: ["Java", "Fabric", "Minecraft 26.3"],
-    ancho: "completo",
+    ancho: "medio",
     rol: "Proyecto propio",
     periodo: "2026",
     enlaces: [
